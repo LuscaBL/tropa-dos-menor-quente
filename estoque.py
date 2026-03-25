@@ -35,7 +35,7 @@ def novo_produto():
 
     novo = Produto(nome, qtd, preco)
     estoque.append(novo)
-    print(f'✅Produto adicionado com sucesso!')
+    print(f'✅ Produto adicionado com sucesso!')
     return
 
 # ========== ADICIONAR QUANTIDADE ==========
@@ -45,10 +45,10 @@ def adicionar_qtd():
 
     if produto:
         qtd = int(input('Quantidade a adicionar: '))
-        Produto.adicionar(qtd)
-        print(f'✅{qtd} {produto} adicionado com sucesso ao total!\n')
+        produto.adicionar(qtd)
+        print(f'✅ {qtd} {nome} adicionado com sucesso ao total!')
     else:
-        print('❌Produto não encontrado!')
+        print('❌ Produto não encontrado!')
 
 # ========== REMOVER QUANTIDADE ==========
 def remover_qtd():
@@ -58,9 +58,9 @@ def remover_qtd():
     if produto:
         qtd = int(input('Quantidade a remover: '))
         produto.remover(qtd)
-        print(f'✅{qtd} {produto} removido com sucesso ao total!\n')
+        print(f'✅ {qtd} {nome} removido com sucesso!\n')
     else:
-        print('❌Produto não encontrado!')
+        print('❌ Produto não encontrado!')
         
 # ========== MENU PRINCIPAL ==========
 def menu():
