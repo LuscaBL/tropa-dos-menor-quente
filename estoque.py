@@ -80,7 +80,7 @@ def adicionar_qtd():
     else:
         print('❌ Produto não encontrado!')
 
-    print(f'✅ {qtd} "{produto.nome}" adicionados(as) com sucesso.')
+    print(f'✅ {produto.nome}: adicionado(a) {qtd} unidades(s) com sucesso.')
 
 # ========== REMOVER QUANTIDADE ==========
 def remover_qtd():
@@ -96,8 +96,8 @@ def remover_qtd():
     else:
         print('❌ Produto não encontrado!')
 
-    print(f'✅ {qtd} "{produto.nome}" removidos(as) com sucesso.')
-    
+    print(f'✅ {produto.nome}: removido(a) {qtd} unidades(s) com sucesso.')
+
 # ========== MENU ==========
 def menu():
     while True:
