@@ -1,4 +1,5 @@
 estoque = []
+
 class Produto:
     def __init__(self, nome, quantidade, preco):
         self.nome = nome
@@ -6,15 +7,30 @@ class Produto:
         self.preco = preco
 
     def adicionar(self, qtd):
-        self.quantidade += qtd
+        if qtd > 0:
+            self.quantidade += qtd
+        else:
+            print("❌ Quantidade inválida!")
 
     def remover(self, qtd):
-        self.quantidade -= qtd
+        if qtd > 0 and qtd <= self.quantidade:
+            self.quantidade -= qtd
+        else:
+            print("❌ Quantidade inválida ou insuficiente!")
 
-# ========== BUSCAR PRODUTO (FUNÇÃO AUXILIAR) ==========
+    def atualizar_preco(self, novo_preco):
+        if novo_preco >= 0:
+            self.preco = novo_preco
+        else:
+            print("❌ Preço inválido!")
+
+    def __str__(self):
+        return f"{self.nome} | Qtd: {self.quantidade} | Preço: R${self.preco:.2f}"
+
+# ========== BUSCAR PRODUTO ==========
 def buscar_produto(nome):
     for produto in estoque:
-        if produto.nome == nome:
+        if produto.nome.lower() == nome.lower():
             return produto
     return None
 
@@ -22,21 +38,33 @@ def buscar_produto(nome):
 def listar():
     if not estoque:
         print('Estoque vazio.')
-        return
     else:
+        print("\n=== ESTOQUE ===")
         for p in estoque:
-            print(f'Nome: {p.nome} | Quantidade: {p.quantidade} | Preço: R${p.preco}')
+            print(p)
 
-# ========== ADICIONAR PRODUTO ==========
+# ========== ADICIONAR NOVO PRODUTO ==========
 def novo_produto():
-    nome =  input('\nDigite o nome do produto que deseja adicionar: ')
-    qtd = int(input('\nDigite a quantidade do produto: '))
-    preco = float(input('\nInforme o preço do produto: '))
+    nome = input('\nDigite o nome do produto: ')
+
+    try:
+        qtd = int(input('Digite a quantidade: '))
+        preco = float(input('Informe o preço: '))
+    except ValueError:
+        print("❌ Entrada inválida!")
+        return
+
+    if qtd < 0 or preco < 0:
+        print("❌ Valores não podem ser negativos!")
+        return
+
+    if buscar_produto(nome):
+        print("❌ Produto já existe!")
+        return
 
     novo = Produto(nome, qtd, preco)
     estoque.append(novo)
-    print(f'✅ Produto adicionado com sucesso!')
-    return
+    print('✅ Produto adicionado com sucesso!')
 
 # ========== ADICIONAR QUANTIDADE ==========
 def adicionar_qtd():
@@ -44,9 +72,11 @@ def adicionar_qtd():
     produto = buscar_produto(nome)
 
     if produto:
-        qtd = int(input('Quantidade a adicionar: '))
-        produto.adicionar(qtd)
-        print(f'✅ {qtd} {nome} adicionado com sucesso ao total!')
+        try:
+            qtd = int(input('Quantidade a adicionar: '))
+            produto.adicionar(qtd)
+        except ValueError:
+            print("❌ Entrada inválida!")
     else:
         print('❌ Produto não encontrado!')
 
@@ -56,32 +86,49 @@ def remover_qtd():
     produto = buscar_produto(nome)
 
     if produto:
-        qtd = int(input('Quantidade a remover: '))
-        produto.remover(qtd)
-        print(f'✅ {qtd} {nome} removido com sucesso!\n')
+        try:
+            qtd = int(input('Quantidade a remover: '))
+            produto.remover(qtd)
+        except ValueError:
+            print("❌ Entrada inválida!")
     else:
         print('❌ Produto não encontrado!')
-        
-# ========== MENU PRINCIPAL ==========
+
+# ========== MENU ==========
 def menu():
     while True:
         try:
-            return int(input("\n=== GERENCIAMENTO DE ESTOQUE ===\n\n1 - Adicionar produto\n2 - Adicionar quantidade a produto\n3 - Remover quantidade de produto\n4 - Listar estoque\n0 - Sair\n\nEscolha uma opção: "))
+            return int(input(
+                "\n=== GERENCIAMENTO DE ESTOQUE ===\n"
+                "1 - Adicionar produto\n"
+                "2 - Adicionar quantidade\n"
+                "3 - Remover quantidade\n"
+                "4 - Listar estoque\n"
+                "0 - Sair\n"
+                "Escolha: "
+            ))
         except ValueError:
-            print(f'❌OPÇÃO INCORRETA. TENTE NOVAMENTE!')
+            print('❌ Opção inválida!')
 
-# ========== EXECUTOR ==========
+# ========== EXECUÇÃO ==========
 def main():
     while True:
         opcao = menu()
 
-        if opcao == 0: exit()
-        elif opcao == 1: novo_produto()
-        elif opcao == 2: adicionar_qtd()
-        elif opcao == 3: remover_qtd()
-        elif opcao == 4: listar()
-        else: print(f'❌Opção incorreta. Tente novamente!')
-    
+        if opcao == 0:
+            print("Encerrando...")
+            break
+        elif opcao == 1:
+            novo_produto()
+        elif opcao == 2:
+            adicionar_qtd()
+        elif opcao == 3:
+            remover_qtd()
+        elif opcao == 4:
+            listar()
+        else:
+            print('❌ Opção inválida!')
+
         print('-' * 40)
 
 main()
