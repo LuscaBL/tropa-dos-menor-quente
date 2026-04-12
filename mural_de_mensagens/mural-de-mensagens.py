@@ -7,7 +7,7 @@ class Mensagens:
         print(f'Visualização não definida.')
 
     def status(self):
-        return "Disponível" if self._disponivel else "Indísponivel"
+        return "Disponível" if self._disponivel else "Indisponível"
     
     def tipo(self):
         return "Mensagem"
@@ -71,7 +71,7 @@ def criar_mensagem():
       mensagens.append(MensagemComum(conteudo))
 
     elif tipo == "2":
-        chave = input("Digite  a chave:")
+        chave = input("Digite  a chave: ")
         mensagens.append(MensagemProtegida(conteudo, chave))
 
     elif tipo == "3":
