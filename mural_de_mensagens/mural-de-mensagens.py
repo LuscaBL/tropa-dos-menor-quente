@@ -18,7 +18,7 @@ class MensagemComum(Mensagens):
         if self._disponivel:
             print(self._conteudo)
         else:
-            print("Mensagem indisponível")
+            print("❌ Mensagem indisponível")
         
     def tipo(self):
             return "Comum"
@@ -78,16 +78,16 @@ def criar_mensagem():
         mensagens.append(MensagemUnica(conteudo))
 
     else:
-         print("Opção inválida")
+         print("❌ Opção inválida")
          return
          
-    print("Mensagem criada com sucesso!")
+    print("✅ Mensagem criada com sucesso!")
 
 def listar_mensagens():
     print('\n===== Mensagens Cadastradas =====')
     
     if not mensagens:
-        print("Nenhuma mensagem cadastrada.")
+        print("❌ Nenhuma mensagem cadastrada.")
         return
     
     for i, msg in enumerate(mensagens):
@@ -95,7 +95,7 @@ def listar_mensagens():
 
 def visualizar_mensagem():
     if not mensagens:
-        print('Nenhuma mensagem cadastrada!')
+        print('❌ Nenhuma mensagem cadastrada!')
         return
     
     try:
@@ -106,7 +106,7 @@ def visualizar_mensagem():
 
 def remover_mensagem():
     if not mensagens:
-        print('Nenhuma mensagem cadastrada!')
+        print('❌ Nenhuma mensagem cadastrada!')
         return
     
     try:
@@ -130,7 +130,7 @@ def menu():
         print("4 - Remover mensagem")
         print("0 - Sair")
 
-        opcao = input("Escolha uma opção: ")
+        opcao = int(input("Escolha uma opção: "))
 
         if opcao == 0: sair()
         elif opcao == 1: criar_mensagem()
