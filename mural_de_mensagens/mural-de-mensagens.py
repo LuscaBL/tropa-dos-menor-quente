@@ -12,6 +12,9 @@ class Mensagens:
     def tipo(self):
         return "Mensagem"
 
+    def __str__(self):
+        print(f'[MENSAGEM] - {self.status()}')
+
 # ===== Mensagem Comum =====
 class MensagemComum(Mensagens):
     def visualizar(self):
@@ -22,6 +25,9 @@ class MensagemComum(Mensagens):
         
     def tipo(self):
             return "Comum"
+    
+    def __str__(self):
+        print(f'[COMUM] - {self.status()}')
     
 # ===== Mensagem Protegida ===== 
 class MensagemProtegida(Mensagens):
@@ -42,6 +48,9 @@ class MensagemProtegida(Mensagens):
 
     def tipo(self):
         return "Protegida"
+    
+    def __str__(self):
+        print(f'[PROTEGIDA] - {self.status()}')
 
 # ===== Mensagem de Visualização Única =====
 class MensagemUnica(Mensagens):
@@ -54,6 +63,9 @@ class MensagemUnica(Mensagens):
 
     def tipo(self):
         return "Única"
+
+    def __str__(self):
+        print(f'[ÚNICA] - {self.status()}')
 
 # ===== Sistema Principal =====
 mensagens = []
@@ -91,7 +103,7 @@ def listar_mensagens():
         return
     
     for i, msg in enumerate(mensagens):
-        print(f'{i} - [{msg.tipo()}] {msg.status()}')
+        print(f'{i} - [{msg.tipo()}] {msg.status()}') #AJEITAR
 
 def visualizar_mensagem():
     if not mensagens:
