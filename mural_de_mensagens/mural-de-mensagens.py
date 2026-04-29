@@ -61,8 +61,8 @@ class MensagemProtegida(Mensagens):
     def __str__(self):
         estado = "Trancada" if self._trancada else "Destrancada"
         return f'[PROTEGIDA] - {self.status()} ({estado})' 
-
-
+    
+# ===== Mensagem Única =====
 class MensagemUnica(Mensagens):
     def __init__(self, conteudo):
         super().__init__(conteudo)
@@ -81,9 +81,8 @@ class MensagemUnica(Mensagens):
     def __str__(self):
         return f'[ÚNICA] - {self.status()}' 
 
-
+# ===== Ações Principais =====
 mensagens = []
-
 
 def criar_mensagem():
     print("\n Tipo de mensagem:")
@@ -110,7 +109,6 @@ def criar_mensagem():
          
     print("✅ Mensagem criada com sucesso!")
 
-
 def listar_mensagens():
     print('\n===== Mensagens Cadastradas =====')
     
@@ -120,7 +118,6 @@ def listar_mensagens():
     
     for i, msg in enumerate(mensagens):
         print(f'{i} - {msg}')
-
 
 def visualizar_mensagem():
     if not mensagens:
@@ -132,7 +129,6 @@ def visualizar_mensagem():
         mensagens[indice].visualizar()
     except (IndexError, ValueError):
         print(f'❌ Índice inválido.')
-
 
 def alternar_mensagem_protegida():
     if not mensagens:
@@ -150,7 +146,6 @@ def alternar_mensagem_protegida():
     except (IndexError, ValueError):
         print('❌ Índice inválido.')
 
-
 def remover_mensagem():
     if not mensagens:
         print('❌ Nenhuma mensagem cadastrada!')
@@ -163,12 +158,11 @@ def remover_mensagem():
     except (IndexError, ValueError):
         print('❌ Índice inválido.')
 
-
 def sair():
     print("Encerrando sistema...")
     exit()
 
-
+# ===== Menu Principal =====
 def menu():
     while True:
         print("\n===== MURAL DE MENSAGENS =====")
@@ -193,6 +187,5 @@ def menu():
         elif opcao == 5: alternar_mensagem_protegida()
         else:
             print('❌ Opção inválida! Tente novamente.')
-
 
 menu()
