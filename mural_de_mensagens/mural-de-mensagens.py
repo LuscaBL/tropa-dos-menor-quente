@@ -4,32 +4,37 @@ class Mensagens:
         self._disponivel = True
     
     def visualizar(self):
-        print(f'Visualização não definida.')
+        print("Não dá pra visualizar")
 
     def status(self):
-        return "Disponível" if self._disponivel else "Indisponível"
+        if self._disponivel:
+            return "Disponível"
+        else:
+            return "Indisponível"
     
-    def tipo(self):
-        return "Mensagem"
-
+    def editar(self, novo_conteudo):
+        print("Não pode editar essa mensagem")
+    
     def __str__(self):
         return f'[MENSAGEM] - {self.status()}'
 
-# ===== Mensagem Comum =====
 class MensagemComum(Mensagens):
     def visualizar(self):
         if self._disponivel:
             print(self._conteudo)
         else:
-            print("❌ Mensagem indisponível")
-        
-    def tipo(self):
-        return "Comum"
+            print("Mensagem indisponível")
     
+    def editar(self, novo_conteudo):
+        if self._disponivel:
+            self._conteudo = novo_conteudo
+            print("Mensagem editada")
+        else:
+            print("Não dá pra editar")
+
     def __str__(self):
         return f'[COMUM] - {self.status()}' 
 
-# ===== Mensagem Protegida ===== 
 class MensagemProtegida(Mensagens):
     def __init__(self, conteudo, chave):
         super().__init__(conteudo)
@@ -38,7 +43,7 @@ class MensagemProtegida(Mensagens):
 
     def visualizar(self):
         if not self._disponivel:
-            print("❌ Mensagem Indisponível.")
+            print("Indisponível")
             return
 
         if self._trancada:
@@ -47,22 +52,29 @@ class MensagemProtegida(Mensagens):
             print(self._conteudo)
 
     def alternar_trava(self):
-        tentativa = input("Digite a chave: ")
+        tentativa = input("Chave: ")
         if tentativa == self._chave:
             self._trancada = not self._trancada
-            estado = "destrancada" if not self._trancada else "trancada"
-            print(f"🔒 Mensagem {estado} com sucesso!")
+            print("Mudou estado")
         else:
-            print("❌ Chave incorreta.")
+            print("Chave errada")
 
-    def tipo(self):
-        return "Protegida"
-    
+    def editar(self, novo_conteudo):
+        if not self._disponivel:
+            print("Indisponível")
+        elif self._trancada:
+            print("Tá trancada")
+        else:
+            self._conteudo = novo_conteudo
+            print("Editada")
+
     def __str__(self):
-        estado = "Trancada" if self._trancada else "Destrancada"
+        if self._trancada:
+            estado = "Trancada"
+        else:
+            estado = "Destrancada"
         return f'[PROTEGIDA] - {self.status()} ({estado})' 
-    
-# ===== Mensagem Única =====
+
 class MensagemUnica(Mensagens):
     def __init__(self, conteudo):
         super().__init__(conteudo)
@@ -75,117 +87,132 @@ class MensagemUnica(Mensagens):
         else:
             print("*" * len(self._conteudo))
 
-    def tipo(self):
-        return "Única"
+    def editar(self, novo_conteudo):
+        if self._visualizada:
+            print("Já foi vista")
+        else:
+            self._conteudo = novo_conteudo
+            print("Editada")
 
     def __str__(self):
         return f'[ÚNICA] - {self.status()}' 
 
-# ===== Ações Principais =====
 mensagens = []
 
 def criar_mensagem():
-    print("\n Tipo de mensagem:")
-    print("1 - Comum")
+    print("\n1 - Comum")
     print("2 - Protegida")
     print("3 - Única")
     
     tipo = input("Opção: ")
-    conteudo = input("Digite o conteúdo: ")
+    conteudo = input("Conteúdo: ")
     
     if tipo == "1":
         mensagens.append(MensagemComum(conteudo))
 
     elif tipo == "2":
-        chave = input("Digite a chave: ")
+        chave = input("Chave: ")
         mensagens.append(MensagemProtegida(conteudo, chave))
 
     elif tipo == "3":
         mensagens.append(MensagemUnica(conteudo))
 
     else:
-        print("❌ Opção inválida")
+        print("Opção inválida")
         return
          
-    print("✅ Mensagem criada com sucesso!")
+    print("Criada")
 
 def listar_mensagens():
-    print('\n===== Mensagens Cadastradas =====')
-    
     if not mensagens:
-        print("❌ Nenhuma mensagem cadastrada.")
+        print("Nada cadastrado")
         return
     
-    for i, msg in enumerate(mensagens):
-        print(f'{i} - {msg}')
+    for i in range(len(mensagens)):
+        print(i, "-", mensagens[i])
 
 def visualizar_mensagem():
     if not mensagens:
-        print('❌ Nenhuma mensagem cadastrada!')
+        print("Nada cadastrado")
         return
     
     try:
-        indice = int(input('Digite o índice da mensagem: '))
-        mensagens[indice].visualizar()
-    except (IndexError, ValueError):
-        print(f'❌ Índice inválido.')
+        i = int(input("Índice: "))
+        mensagens[i].visualizar()
+    except:
+        print("Erro")
+
+def editar_mensagem():
+    if not mensagens:
+        print("Nada cadastrado")
+        return
+    
+    try:
+        i = int(input("Índice: "))
+        novo = input("Novo conteúdo: ")
+        mensagens[i].editar(novo)
+    except:
+        print("Erro")
 
 def alternar_mensagem_protegida():
     if not mensagens:
-        print('❌ Nenhuma mensagem cadastrada!')
+        print("Nada cadastrado")
         return
     
     try:
-        indice = int(input('Digite o índice da mensagem: '))
-        msg = mensagens[indice]
+        i = int(input("Índice: "))
+        msg = mensagens[i]
 
         if isinstance(msg, MensagemProtegida):
             msg.alternar_trava()
         else:
-            print("❌ Essa mensagem não é protegida.")
-    except (IndexError, ValueError):
-        print('❌ Índice inválido.')
+            print("Não é protegida")
+    except:
+        print("Erro")
 
 def remover_mensagem():
     if not mensagens:
-        print('❌ Nenhuma mensagem cadastrada!')
+        print("Nada cadastrado")
         return
     
     try:
-        indice = int(input('Digite o índice da mensagem: '))
-        mensagens.pop(indice)
-        print('✅ Mensagem removida com sucesso!')
-    except (IndexError, ValueError):
-        print('❌ Índice inválido.')
+        i = int(input("Índice: "))
+        mensagens.pop(i)
+        print("Removida")
+    except:
+        print("Erro")
 
-def sair():
-    print("Encerrando sistema...")
-    exit()
-
-# ===== Menu Principal =====
 def menu():
     while True:
-        print("\n===== MURAL DE MENSAGENS =====")
-        print("1 - Criar mensagem")
-        print("2 - Listar mensagens")
-        print("3 - Visualizar mensagem")
-        print("4 - Remover mensagem")
-        print("5 - Trancar/Destrancar mensagem protegida")
+        print("\n1 - Criar")
+        print("2 - Listar")
+        print("3 - Ver")
+        print("4 - Editar mensagem")
+        print("5 - Remover")
+        print("6 - Trancar/destrancar")
         print("0 - Sair")
 
         try:
-            opcao = int(input("Escolha uma opção: "))
-        except ValueError:
-            print('❌ Opção inválida!')
+            op = int(input("Opção: "))
+        except:
+            print("Erro")
             continue
 
-        if opcao == 0: sair()
-        elif opcao == 1: criar_mensagem()
-        elif opcao == 2: listar_mensagens()
-        elif opcao == 3: visualizar_mensagem()
-        elif opcao == 4: remover_mensagem()
-        elif opcao == 5: alternar_mensagem_protegida()
+        if op == 0:
+            break
+        elif op == 1:
+            criar_mensagem()
+        elif op == 2:
+            listar_mensagens()
+        elif op == 3:
+            visualizar_mensagem()
+        elif op == 4:
+            editar_mensagem()
+        elif op == 5:
+            remover_mensagem()
+        elif op == 6:
+            alternar_mensagem_protegida()
         else:
-            print('❌ Opção inválida! Tente novamente.')
+            print("Inválido")
 
 menu()
