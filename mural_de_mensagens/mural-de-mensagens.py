@@ -1,10 +1,30 @@
+# =========================
+# EXCEÇÕES
+# =========================
+
+class MensagemError(Exception):
+    pass
+
+class MensagemIndisponivelError(MensagemError):
+    pass
+
+class MensagemTrancadaError(MensagemError):
+    pass
+
+class ChaveIncorretaError(MensagemError):
+    pass
+
+# =========================
+# CLASSE BASE
+# =========================
+
 class Mensagens:
     def __init__(self, conteudo):
         self._conteudo = conteudo
         self._disponivel = True
     
     def visualizar(self):
-        print("Não dá pra visualizar")
+        raise MensagemError("Não dá pra visualizar")
 
     def status(self):
         if self._disponivel:
@@ -13,29 +33,35 @@ class Mensagens:
             return "Indisponível"
     
     def editar(self, novo_conteudo):
-        print("Não pode editar essa mensagem")
+        raise MensagemError("Não pode editar essa mensagem")
     
     def __str__(self):
         return f'[MENSAGEM] - {self.status()}'
 
+# =========================
+# MENSAGEM COMUM
+# =========================
 
 class MensagemComum(Mensagens):
     def visualizar(self):
         if self._disponivel:
             print(self._conteudo)
         else:
-            print("Mensagem indisponível")
+            raise MensagemIndisponivelError("Mensagem indisponível")
     
     def editar(self, novo_conteudo):
         if self._disponivel:
             self._conteudo = novo_conteudo
             print("Mensagem editada")
         else:
-            print("Não dá pra editar")
+            raise MensagemIndisponivelError("Não dá pra editar")
 
     def __str__(self):
         return f'[COMUM] - {self.status()}' 
 
+# =========================
+# MENSAGEM PROTEGIDA
+# =========================
 
 class MensagemProtegida(Mensagens):
     def __init__(self, conteudo, chave):
@@ -43,13 +69,11 @@ class MensagemProtegida(Mensagens):
         self._chave = chave
         self._trancada = True
 
-def visualizar(self):
-    if not self._visualizada:
-        print(self._conteudo)
-        self._visualizada = True
-        self._disponivel = False
-    else:
-        print("*" * len(self._conteudo))
+    def visualizar(self):
+        if self._disponivel:
+            print(self._conteudo)
+        else:
+            raise MensagemIndisponivelError("Mensagem indisponível")
 
     def alternar_trava(self):
         tentativa = input("Chave: ")
@@ -57,13 +81,13 @@ def visualizar(self):
             self._trancada = not self._trancada
             print("Mudou estado")
         else:
-            print("Chave errada")
+            raise ChaveIncorretaError("Chave errada")
 
     def editar(self, novo_conteudo):
         if not self._disponivel:
-            print("Indisponível")
+            raise MensagemIndisponivelError("Indisponível")
         elif self._trancada:
-            print("Tá trancada")
+            raise MensagemTrancadaError("Tá trancada")
         else:
             self._conteudo = novo_conteudo
             print("Editada")
@@ -76,6 +100,9 @@ def visualizar(self):
 
         return f'[PROTEGIDA] - {self.status()} ({estado})'
 
+# =========================
+# MENSAGEM ÚNICA
+# =========================
 
 class MensagemUnica(Mensagens):
     def __init__(self, conteudo):
@@ -92,7 +119,7 @@ class MensagemUnica(Mensagens):
 
     def editar(self, novo_conteudo):
         if self._visualizada:
-            print("Já foi vista")
+            raise MensagemIndisponivelError("Já foi vista")
         else:
             self._conteudo = novo_conteudo
             print("Editada")
@@ -100,6 +127,9 @@ class MensagemUnica(Mensagens):
     def __str__(self):
         return f'[ÚNICA] - {self.status()}' 
 
+# =========================
+# SISTEMA
+# =========================
 
 class SistemaMensagens:
     def __init__(self):
@@ -145,8 +175,8 @@ class SistemaMensagens:
         try:
             i = int(input("Índice: "))
             self.mensagens[i].visualizar()
-        except:
-            print("Erro")
+        except Exception as e:
+            print("Erro:", e)
 
     def editar_mensagem(self):
         if not self.mensagens:
@@ -157,8 +187,8 @@ class SistemaMensagens:
             i = int(input("Índice: "))
             novo = input("Novo conteúdo: ")
             self.mensagens[i].editar(novo)
-        except:
-            print("Erro")
+        except Exception as e:
+            print("Erro:", e)
 
     def alternar_mensagem_protegida(self):
         if not self.mensagens:
@@ -173,8 +203,8 @@ class SistemaMensagens:
                 msg.alternar_trava()
             else:
                 print("Não é protegida")
-        except:
-            print("Erro")
+        except Exception as e:
+            print("Erro:", e)
 
     def remover_mensagem(self):
         if not self.mensagens:
@@ -185,9 +215,12 @@ class SistemaMensagens:
             i = int(input("Índice: "))
             self.mensagens.pop(i)
             print("Removida")
-        except:
-            print("Erro")
+        except Exception as e:
+            print("Erro:", e)
 
+# =========================
+# INTERFACE
+# =========================
 
 class InterfaceTexto:
     def __init__(self, sistema):
@@ -225,7 +258,6 @@ class InterfaceTexto:
                 self.sistema.alternar_mensagem_protegida()
             else:
                 print("Inválido")
-
 
 sistema = SistemaMensagens()
 interface = InterfaceTexto(sistema)
