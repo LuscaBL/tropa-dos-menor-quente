@@ -3,15 +3,19 @@
 # =========================
 
 class MensagemError(Exception):
+    """Exceção base para erros relacionados a mensagens."""
     pass
 
 class MensagemIndisponivelError(MensagemError):
+    """Erro lançado quando a mensagem não está disponível."""
     pass
 
 class MensagemTrancadaError(MensagemError):
+    """Erro lançado ao tentar editar uma mensagem trancada."""
     pass
 
 class ChaveIncorretaError(MensagemError):
+    """Erro lançado quando a chave informada está incorreta."""
     pass
 
 # =========================
@@ -19,23 +23,55 @@ class ChaveIncorretaError(MensagemError):
 # =========================
 
 class Mensagens:
-    def __init__(self, conteudo):
-        self._conteudo = conteudo
-        self._disponivel = True
+    """
+    Classe base que representa uma mensagem genérica no sistema.
     
-    def visualizar(self):
+    Define atributos e operações comuns a todos os tipos de mensagens.
+    """
+
+    def __init__(self, conteudo: str) -> None:
+        """
+        Inicializa uma mensagem.
+
+        :param conteudo: Texto da mensagem
+        """
+        self._conteudo: str = conteudo
+        self._disponivel: bool = True
+    
+    def visualizar(self) -> None:
+        """
+        Método abstrato para visualizar a mensagem.
+
+        Raises:
+            MensagemError: Caso o método não seja implementado na subclasse.
+        """
         raise MensagemError("Não dá pra visualizar")
 
-    def status(self):
-        if self._disponivel:
-            return "Disponível"
-        else:
-            return "Indisponível"
+    def status(self) -> str:
+        """
+        Retorna o status da mensagem.
+
+        :return: "Disponível" ou "Indisponível"
+        """
+        return "Disponível" if self._disponivel else "Indisponível"
     
-    def editar(self, novo_conteudo):
+    def editar(self, novo_conteudo: str) -> None:
+        """
+        Método abstrato para edição da mensagem.
+
+        :param novo_conteudo: Novo conteúdo da mensagem
+
+        Raises:
+            MensagemError: Caso a mensagem não possa ser editada.
+        """
         raise MensagemError("Não pode editar essa mensagem")
     
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Retorna representação textual da mensagem.
+
+        :return: String formatada com status
+        """
         return f'[MENSAGEM] - {self.status()}'
 
 # =========================
@@ -43,20 +79,41 @@ class Mensagens:
 # =========================
 
 class MensagemComum(Mensagens):
-    def visualizar(self):
+    """
+    Representa uma mensagem comum, que pode ser visualizada e editada livremente.
+    """
+
+    def visualizar(self) -> None:
+        """
+        Exibe o conteúdo da mensagem.
+
+        Raises:
+            MensagemIndisponivelError: Caso a mensagem não esteja disponível.
+        """
         if self._disponivel:
             print(self._conteudo)
         else:
             raise MensagemIndisponivelError("Mensagem indisponível")
     
-    def editar(self, novo_conteudo):
+    def editar(self, novo_conteudo: str) -> None:
+        """
+        Atualiza o conteúdo da mensagem.
+
+        :param novo_conteudo: Novo texto da mensagem
+
+        Raises:
+            MensagemIndisponivelError: Caso a mensagem não esteja disponível.
+        """
         if self._disponivel:
             self._conteudo = novo_conteudo
             print("Mensagem editada")
         else:
             raise MensagemIndisponivelError("Não dá pra editar")
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Retorna representação textual da mensagem comum.
+        """
         return f'[COMUM] - {self.status()}' 
 
 # =========================
@@ -64,26 +121,57 @@ class MensagemComum(Mensagens):
 # =========================
 
 class MensagemProtegida(Mensagens):
-    def __init__(self, conteudo, chave):
-        super().__init__(conteudo)
-        self._chave = chave
-        self._trancada = True
+    """
+    Representa uma mensagem protegida por chave, que pode ser trancada ou destrancada.
+    """
 
-    def visualizar(self):
+    def __init__(self, conteudo: str, chave: str) -> None:
+        """
+        Inicializa a mensagem protegida.
+
+        :param conteudo: Texto da mensagem
+        :param chave: Chave de acesso
+        """
+        super().__init__(conteudo)
+        self._chave: str = chave
+        self._trancada: bool = True
+
+    def visualizar(self) -> None:
+        """
+        Exibe o conteúdo da mensagem.
+
+        Raises:
+            MensagemIndisponivelError: Caso a mensagem não esteja disponível.
+        """
         if self._disponivel:
             print(self._conteudo)
         else:
             raise MensagemIndisponivelError("Mensagem indisponível")
 
-    def alternar_trava(self):
-        tentativa = input("Chave: ")
+    def alternar_trava(self) -> None:
+        """
+        Alterna o estado de trava da mensagem mediante verificação de chave.
+
+        Raises:
+            ChaveIncorretaError: Caso a chave informada seja inválida.
+        """
+        tentativa: str = input("Chave: ")
         if tentativa == self._chave:
             self._trancada = not self._trancada
             print("Mudou estado")
         else:
             raise ChaveIncorretaError("Chave errada")
 
-    def editar(self, novo_conteudo):
+    def editar(self, novo_conteudo: str) -> None:
+        """
+        Edita o conteúdo da mensagem protegida.
+
+        :param novo_conteudo: Novo texto da mensagem
+
+        Raises:
+            MensagemIndisponivelError: Caso a mensagem esteja indisponível
+            MensagemTrancadaError: Caso a mensagem esteja trancada
+        """
         if not self._disponivel:
             raise MensagemIndisponivelError("Indisponível")
         elif self._trancada:
@@ -92,12 +180,11 @@ class MensagemProtegida(Mensagens):
             self._conteudo = novo_conteudo
             print("Editada")
 
-    def __str__(self):
-        if self._trancada:
-            estado = "Trancada"
-        else:
-            estado = "Destrancada"
-
+    def __str__(self) -> str:
+        """
+        Retorna representação textual da mensagem protegida.
+        """
+        estado: str = "Trancada" if self._trancada else "Destrancada"
         return f'[PROTEGIDA] - {self.status()} ({estado})'
 
 # =========================
@@ -105,11 +192,25 @@ class MensagemProtegida(Mensagens):
 # =========================
 
 class MensagemUnica(Mensagens):
-    def __init__(self, conteudo):
-        super().__init__(conteudo)
-        self._visualizada = False
+    """
+    Representa uma mensagem que pode ser visualizada apenas uma vez.
+    """
 
-    def visualizar(self):
+    def __init__(self, conteudo: str) -> None:
+        """
+        Inicializa a mensagem única.
+
+        :param conteudo: Texto da mensagem
+        """
+        super().__init__(conteudo)
+        self._visualizada: bool = False
+
+    def visualizar(self) -> None:
+        """
+        Exibe o conteúdo apenas na primeira visualização.
+
+        Após isso, a mensagem se torna indisponível.
+        """
         if not self._visualizada:
             print(self._conteudo)
             self._visualizada = True
@@ -117,14 +218,25 @@ class MensagemUnica(Mensagens):
         else:
             print("*" * len(self._conteudo))
 
-    def editar(self, novo_conteudo):
+    def editar(self, novo_conteudo: str) -> None:
+        """
+        Edita o conteúdo da mensagem.
+
+        :param novo_conteudo: Novo texto da mensagem
+
+        Raises:
+            MensagemIndisponivelError: Caso a mensagem já tenha sido visualizada
+        """
         if self._visualizada:
             raise MensagemIndisponivelError("Já foi vista")
         else:
             self._conteudo = novo_conteudo
             print("Editada")
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Retorna representação textual da mensagem única.
+        """
         return f'[ÚNICA] - {self.status()}' 
 
 # =========================
@@ -132,22 +244,28 @@ class MensagemUnica(Mensagens):
 # =========================
 
 class SistemaMensagens:
-    def __init__(self):
-        self.mensagens = []
+    """
+    Gerencia o conjunto de mensagens do sistema.
+    """
 
-    def criar_mensagem(self):
+    def __init__(self) -> None:
+        """Inicializa o sistema com uma lista vazia de mensagens."""
+        self.mensagens: list[Mensagens] = []
+
+    def criar_mensagem(self) -> None:
+        """Cria uma nova mensagem com base na escolha do usuário."""
         print("\n1 - Comum")
         print("2 - Protegida")
         print("3 - Única")
     
-        tipo = input("Opção: ")
-        conteudo = input("Conteúdo: ")
+        tipo: str = input("Opção: ")
+        conteudo: str = input("Conteúdo: ")
     
         if tipo == "1":
             self.mensagens.append(MensagemComum(conteudo))
 
         elif tipo == "2":
-            chave = input("Chave: ")
+            chave: str = input("Chave: ")
             self.mensagens.append(MensagemProtegida(conteudo, chave))
 
         elif tipo == "3":
@@ -159,63 +277,68 @@ class SistemaMensagens:
          
         print("Criada")
 
-    def listar_mensagens(self):
+    def listar_mensagens(self) -> None:
+        """Lista todas as mensagens cadastradas."""
         if not self.mensagens:
             print("Nada cadastrado")
             return
     
-        for i in range(len(self.mensagens)):
-            print(i, "-", self.mensagens[i])
+        for i, msg in enumerate(self.mensagens):
+            print(i, "-", msg)
 
-    def visualizar_mensagem(self):
+    def visualizar_mensagem(self) -> None:
+        """Permite visualizar uma mensagem pelo índice."""
         if not self.mensagens:
             print("Nada cadastrado")
             return
     
         try:
-            i = int(input("Índice: "))
+            i: int = int(input("Índice: "))
             self.mensagens[i].visualizar()
-        except Exception as e:
+        except (ValueError, IndexError, MensagemError) as e:
             print("Erro:", e)
 
-    def editar_mensagem(self):
+    def editar_mensagem(self) -> None:
+        """Permite editar uma mensagem pelo índice."""
         if not self.mensagens:
             print("Nada cadastrado")
             return
     
         try:
-            i = int(input("Índice: "))
-            novo = input("Novo conteúdo: ")
+            i: int = int(input("Índice: "))
+            novo: str = input("Novo conteúdo: ")
             self.mensagens[i].editar(novo)
-        except Exception as e:
+        except (ValueError, IndexError, MensagemError) as e:
             print("Erro:", e)
 
-    def alternar_mensagem_protegida(self):
+    def alternar_mensagem_protegida(self) -> None:
+        """Alterna o estado de trava de uma mensagem protegida."""
         if not self.mensagens:
             print("Nada cadastrado")
             return
     
         try:
-            i = int(input("Índice: "))
-            msg = self.mensagens[i]
+            i: int = int(input("Índice: "))
+            msg: Mensagens = self.mensagens[i]
 
             if isinstance(msg, MensagemProtegida):
                 msg.alternar_trava()
             else:
                 print("Não é protegida")
-        except Exception as e:
+        except (ValueError, IndexError, MensagemError) as e:
             print("Erro:", e)
 
-    def remover_mensagem(self):
+    def remover_mensagem(self) -> None:
+        """Remove uma mensagem pelo índice."""
         if not self.mensagens:
             print("Nada cadastrado")
             return
     
         try:
-            i = int(input("Índice: "))
+            i: int = int(input("Índice: "))
             self.mensagens.pop(i)
             print("Removida")
-        except Exception as e:
+        except (ValueError, IndexError) as e:
             print("Erro:", e)
 
 # =========================
@@ -223,10 +346,20 @@ class SistemaMensagens:
 # =========================
 
 class InterfaceTexto:
-    def __init__(self, sistema):
-        self.sistema = sistema
+    """
+    Interface de interação via terminal com o sistema de mensagens.
+    """
 
-    def menu(self):
+    def __init__(self, sistema: SistemaMensagens) -> None:
+        """
+        Inicializa a interface.
+
+        :param sistema: Instância do sistema de mensagens
+        """
+        self.sistema: SistemaMensagens = sistema
+
+    def menu(self) -> None:
+        """Exibe o menu principal e processa as ações do usuário."""
         while True:   
             print("\n1 - Criar")
             print("2 - Listar")
@@ -237,8 +370,8 @@ class InterfaceTexto:
             print("0 - Sair")
 
             try:
-                op = int(input("Opção: "))
-            except:
+                op: int = int(input("Opção: "))
+            except ValueError:
                 print("Erro")
                 continue
 
@@ -258,6 +391,10 @@ class InterfaceTexto:
                 self.sistema.alternar_mensagem_protegida()
             else:
                 print("Inválido")
+
+# =========================
+# EXECUÇÃO
+# =========================
 
 sistema = SistemaMensagens()
 interface = InterfaceTexto(sistema)
